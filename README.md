@@ -1,5 +1,7 @@
 # mycode（Python 复写版）
 
+![终端界面](docs/terminal.png)
+
 一个**从零手写**的命令行 AI 编程助手，是同名 Java 项目（`E:\javaagent`）的 Python 复写版。
 除 Python 标准库外**零第三方依赖**（Java 版除 JSON 序列化外零框架依赖；
 Python 连 JSON 都是内置的，做到了真正的零依赖），目的是让人看清一个 agent

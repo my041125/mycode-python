@@ -95,18 +95,33 @@ class _LiveBlock:
         self._buf.append(delta)
         self._redraw(markdown.render("".join(self._buf)))
 
-    def seal(self) -> None:
-        """收尾当前块：光标落到下一行，之后的输出不再叠进块里。"""
-        if self._lines or self._raw_since:
-            print()
+    def begin(self) -> None:
+        """开启一轮新的问答：清空「本轮是否有流式输出」的标记。
+
+        必须在每次 ask 之前调用 —— seal 只收尾渲染态、不动这个标记，
+        否则 after_llm 的 seal 会把它清掉，shell 会误判「没有流式」
+        而把整段回答再打一遍（实测踩过的双写 bug）。
+        """
         self._buf.clear()
         self._lines = 0
         self._got_text = False
         self._raw_since = False
         self._degraded = False
 
+    def seal(self) -> None:
+        """收尾当前渲染块：光标落到下一行，之后的输出不再叠进块里。
+
+        注意：这里刻意不清 _got_text —— 「本轮是否有过流式输出」要等
+        shell 判断完打印分支之后，由下一轮的 begin() 重置。
+        """
+        if self._lines or self._raw_since:
+            print()
+        self._buf.clear()
+        self._lines = 0
+        self._degraded = False
+
     def is_empty(self) -> bool:
-        """本次模型调用是否产生过文本增量。"""
+        """本轮 ask 是否产生过文本增量（决定 shell 是否补打完整回答）。"""
         return not self._got_text
 
     def _redraw(self, lines: list[str]) -> None:
@@ -380,6 +395,7 @@ class Shell:
             try:
                 # 流式：文字边生成边渲染成 Markdown 原地重绘（ANSI 终端）；
                 # 非 ANSI 终端自动退回原样流式 —— 观感降级，功能不缺
+                self._live.begin()  # 重置「本轮有流式输出」标记（上一轮已被 seal 收尾）
                 answer = session.ask(text, sink=self._live.feed)
                 streamed = not self._live.is_empty()
                 if not streamed and answer:

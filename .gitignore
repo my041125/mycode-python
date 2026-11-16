@@ -6,6 +6,9 @@ agent.toml
 .mimosa/
 .zcode/
 
+# 截图的中间产物（PNG 是最终产物，HTML 可用 scripts/render_terminal.py 再生成）
+docs/terminal.html
+
 # Python 运行产物
 __pycache__/
 *.py[cod]
