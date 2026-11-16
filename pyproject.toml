@@ -1,0 +1,19 @@
+# 构建配置：零第三方依赖，运行只需 python -m mycode。
+# 这里的 pyproject 主要用于声明元数据与 Python 版本要求，
+# 将来若想 pip install -e . 安装为命令，也可以直接用。
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mycode"
+version = "1.0"
+description = "从零手写的命令行 AI 编程助手（Python 复写版）：纯标准库，零第三方依赖"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "my" }]
+
+# 源码含中文注释，无需额外配置；这里显式声明包清单，避免自动发现误收 samples
+[tool.setuptools]
+packages = ["mycode", "mycode.kernel", "mycode.clients", "mycode.tools", "mycode.extensions", "mycode.shell", "desktop"]

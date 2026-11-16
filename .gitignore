@@ -1,0 +1,19 @@
+# 密钥与本地数据永远不进 git（与 Java 版同一条安全红线）
+agent.toml
+.mycode/
+
+# 本地工具状态（安全扫描台账 / 会话计划），不进仓库
+.mimosa/
+.zcode/
+
+# Python 运行产物
+__pycache__/
+*.py[cod]
+.venv/
+build/
+dist/
+*.egg-info/
+
+# 编辑器
+.idea/
+.vscode/
